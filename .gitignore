@@ -1,0 +1,7 @@
+__pycache__/
+.vscode/
+carpediem/__pycache__/
+data/
+broker/log/
+broker/ebest/res/
+webapp/

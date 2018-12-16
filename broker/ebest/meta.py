@@ -18,7 +18,7 @@ class TR:
         def __init__(self):
             # caller 함수의 이름을 인스턴스 name에 저장
             # event 처리 함수내에서 name이 다르면 pass하는 용도 
-            self.name = inspect.stack()[1][3]
+            self.methodname = inspect.stack()[1][3]
 
     #해외선물 분봉조회
     class o3103:
@@ -31,7 +31,7 @@ class TR:
         TR_PER_SEC = 1
 
         def __init__(self):
-            self.name = inspect.stack()[1][3]
+            self.methodname = inspect.stack()[1][3]
     
     #해외선물 일별 (o3104)
     class o3104:
@@ -43,7 +43,7 @@ class TR:
         TR_PER_SEC = 1
 
         def __init__(self):
-            self.name = inspect.stack()[1][3]
+            self.methodname = inspect.stack()[1][3]
     
     #해외선물 종목 정보 (o3105)
     class o3105:
@@ -55,7 +55,7 @@ class TR:
         TR_PER_SEC = 1
 
         def __init__(self):
-            self.name = inspect.stack()[1][3]
+            self.methodname = inspect.stack()[1][3]
 
     #해외선물 관심 (o3107)
     class o3107:
@@ -67,7 +67,7 @@ class TR:
         TR_PER_SEC = 1
 
         def __init__(self):
-            self.name = inspect.stack()[1][3]
+            self.methodname = inspect.stack()[1][3]
     
     #해외선물 차트 일주월 (o3108)
     class o3108:
@@ -80,7 +80,7 @@ class TR:
         TR_PER_SEC = 1
 
         def __init__(self):
-            self.name = inspect.stack()[1][3]
+            self.methodname = inspect.stack()[1][3]
 
 
     #해외선물 체결 (OVC)
@@ -93,11 +93,12 @@ class TR:
         TR_PER_SEC = 0
 
         def __init__(self):
-            self.name = inspect.stack()[1][3]
+            self.methodname = inspect.stack()[1][3]
 
 
 
 class Helper:
+
 
     @staticmethod
     def classify_group(product):

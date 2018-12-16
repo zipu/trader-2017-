@@ -1,0 +1,78 @@
+{% extends 'trading/base_trading.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Account{% endblock title %}
+
+{% block trading_content %}
+<div class="main">
+    <div class="container-fluid">
+        <!-- ========= 여기부터 매매결과 테이블 =========== -->
+        <div class="balance-sheet" style="width:80%;margin: 0 auto;">
+          <h4> 계좌 입출금 </h4>
+          <table class="table table-condensed table-bordered table-hover table-striped statement-table">
+              <thead>
+                  <tr>
+                      <th style='width:25%'>Date</th>
+                      <th style='width:25%'>Cash</th>
+                      <th style='width:25%'>KRW</th>
+                      <th style='width:25%'>USD</th>
+                  </tr>
+              </thead>
+              <tbody>
+                {% for balance in account %}
+                  <tr>
+                      <td style='width:25%'>{{ balance.date |date:"Y-m-d" }}</td>
+                      <td style='width:25%;
+                        color: {% if balance.cash > 0 %}blue{% else %} red {% endif %}'>
+                        {{ balance.cash | default:""| intcomma}}{{ balance.cash | yesno:" ₩, , "}}</td>
+                      <td style='width:25%;
+                        color: {% if balance.krw > 0 %}blue{% else %} red {% endif %}'>
+                        {{ balance.krw | default:""| intcomma }}{{ balance.krw | yesno:" ₩, , "}}</td>
+                      <td style='width:25%;
+                        color: {% if balance.usd > 0 %}blue{% else %} red {% endif %}'>
+                        {{ balance.usd | default:""| intcomma }}{{ balance.usd | yesno:" $, , "}}</td>
+                      </td>
+                  </tr>
+                {% endfor %}
+                  <tr>
+                    <td style='width:25%;font-weight:bold'> Total </td>
+                    <td style='width:25%;
+                        color: {% if total.cash > 0 %}blue{% else %} red {% endif %}'>
+                        {{ total.cash | default:""| intcomma}}{{ total.cash | yesno:" ₩, , "}}</td>
+                    <td style='width:25%;
+                        color: {% if total.krw > 0 %}blue{% else %} red {% endif %}'>
+                        {{ total.krw | default:""| intcomma }}{{ total.krw | yesno:" ₩, , "}}</td>
+                    <td style='width:25%;
+                        color: {% if total.usd > 0 %}blue{% else %} red {% endif %}'>
+                        {{ total.usd | default:""| intcomma }}{{ total.usd | yesno:" $, , "}}</td>
+                  </tr>
+              </tbody>
+          </table>
+<!-- ===============  Pagination  ===========================================--> 
+      {% if is_paginated %}
+        <ul class="pagination">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+            </li>
+          {% else %}
+            <li class="disabled"><span>&laquo;</span></li>
+          {% endif %}
+          {% for i in paginator.page_range %}
+            {% if page_obj.number == i %}
+              <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+            {% else %}
+              <li><a href="?page={{ i }}">{{ i }}</a></li>
+            {% endif %}
+          {% endfor %}
+          {% if page_obj.has_next %}
+            <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+          {% else %}
+            <li class="disabled"><span>&raquo;</span></li>
+          {% endif %}
+        </ul>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock trading_content %}

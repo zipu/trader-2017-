@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Overview{% endblock title %}
+{% block content %}  
+
+<div class="container">
+    <div class="first-row">
+        <div class="timeframe">
+            <button class="btn btn-default btn-xs" type="button" onclick="timeFrame('day', 1)">D</button>
+            <button class="btn btn-default btn-xs" type="button" onclick="timeFrame('week', 1)">W</button>
+            <button class="btn btn-default btn-xs" type="button" onclick="timeFrame('month', 1)">M</button>
+        </div>
+        <div id='equity-chart'></div>
+    </div>
+</div>
+
+<script src="http://code.highcharts.com/stock/highstock.js"></script>
+<script>
+    var equity = {
+        principal: {{ equity.principal }},
+        profit: {{ equity.profit }},
+        profit_estim: {{ equity.profit_estim }},
+        volatility: {{ equity.volatility }}
+    };
+</script>
+<script src="{% static "js/chart.js" %}"></script>
+{% endblock content %}

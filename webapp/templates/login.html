@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Login | Carpediem </title>
+    <link rel="icon" type="image/png" href="{% static "images/favicon.ico" %}">
+</head>
+<body>
+<div class = "container">
+	<div class="wrapper" style="position:absolute;top:35%;left:45%">
+		<form action="{% url 'login' %}" method="post" name="Login_Form">
+        {% csrf_token %}   
+			  <table class="table">
+                    <tr>
+                        <td><input id="id_username" name="username" 
+                                   type="password" ></td>
+                    </tr>
+                    <tr>
+                        <td><input id="id_password" name="password" 
+                                   type="password" style="width: 0px; height: 0px; opacity: 0;"></td>
+                    </tr>
+                </table>
+			  <button name="Submit" value="Login" 
+                      type="submit" style="width: 0px; height: 0px; opacity: 0;" >login</button>
+		</form>			
+	</div>
+</div>
+</body>
+    {% block footer_javascript %}
+        {% block footer_javascript_site %}
+            <script src="{% static "js/jquery.min.js" %}"></script>
+            <script src="{% static "js/app.js" %}"></script>
+        {% endblock footer_javascript_site %}
+    {% endblock footer_javascript %}
+</html>

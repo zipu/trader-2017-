@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Records{% endblock title %}
+
+{% block content %}  
+
+<nav class="navbar navbar-default sidebar" role="navigation" style="position:fixed">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-sidebar-navbar-collapse-1">
+    <span class="sr-only">Toggle navigation</span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-sidebar-navbar-collapse-1">
+            <ul class="nav navbar-nav navbutton" style="width:100%">
+                <li {% if request.path == "/trading/record" %}class="active"{%endif%}><a href="{% url 'record' %}">매매기록<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-list-alt"></span></a></li>
+                <li {% if request.path == "/trading/account" %}class="active"{%endif%}><a href="{% url 'account' %}">계좌관리<span style="font-size:16px;" class="pull-right hidden-xs showopacity glyphicon glyphicon-usd"></span></a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+{% block trading_content %}{%endblock trading_content %}
+
+
+{% endblock content %}

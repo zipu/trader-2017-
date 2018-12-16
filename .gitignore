@@ -4,4 +4,4 @@ carpediem/__pycache__/
 data/
 broker/log/
 broker/ebest/res/
-webapp/
+webapp/static

@@ -1,0 +1,269 @@
+{% extends 'trading/base_trading.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Trading{% endblock title %}
+
+{% block trading_content %}
+
+<div class="main">
+  <div class="container-fluid">
+    <!-- ========= 여기부터 미결제 매매 =========== -->
+    <div class="game">
+      <h4> 진행중 </h4>
+      <table class="table table-condensed table-bordered table-hover games">
+          <thead>
+            <tr>
+              <th style='width:5%'>#</th>
+              <th style='width:17%'>게시일</th>
+              <th style='width:25%'>상 품</th>
+              <th style='width:13%'>포지션</th>
+              <th style='width:15%'>손 익</th>
+              <th style='width:15%'>수익/위험</th>
+              <th style='width:10%'>매매횟수</th>
+            </tr>
+            <tbody>
+              {% for game in open_game %}
+              <tr value={{game.id}}>
+                <td style='width:5%'>{{ game.id }}</td>
+                <td style='width:17%'>{{ game.pub_date |date:"Y-m-d" }}</td>
+                <td style='width:25%'>{{ game.name }}</td>
+                <td style="width:13%;
+                  color: {% if game.position == 1 %}darkcyan {% else %} purple {% endif %}">
+                    {% if game.position == 1 %}Long
+                    {% elif game.position == -1 %}Short
+                    {% endif %}
+                  </td>
+                <td style="width:15%;
+                  color: {% if game.profit > 0 %}blue {% else %} red {% endif %}">
+                  {{ game.profit | floatformat | intcomma }}</td>
+                <td style="width:15%;
+                  color: {% if game.profit_to_risk > 0 %}blue {% else %} red {% endif %}">
+                  {{ game.profit_to_risk | floatformat}}</td>
+                <td style='width:10%'>{{ game.entry_set.count }}</td>
+              </tr>
+              {% endfor %}
+              <form id="game-form" action="{% url 'record' %}" method="post">
+                {% csrf_token %}
+                <input type="text" value="new_game" name="form_type" hidden></input>
+                <tr id='new-game' hidden>
+                  <td style='width:5%'></td>
+                  <td style='width:17%'><input type='datetime' class='form-control input-sm' name='pub_date' required></td>
+                  <td style='width:25%'><input type='text' class='form-control input-sm' name='name' required></td>
+                  <td style='width:13%'><select class='form-control input-sm' name='position' required>
+                   <option value=1>Long</option>
+                   <option value=-1>Short</option>
+                  </select></td>
+                <td style='width:15%'></td>
+                <td style='width:15%'></td>
+                <td style='width:10%'></td>
+                </tr>
+            </tbody>
+      </table>
+      <p style="color: red; font-weight:bold; text-align:center;">
+      {% if messages %}
+          {% for message in messages %}
+          {{ message }}
+          {% endfor %}
+      {% endif %}
+      </p>
+      <button id="save-button" type="submit" form="game-form" class="btn btn-default" style="font-weight: bold; width: 70px; float: right; display:none;">Save</button>
+      <button id="add-button" type="button" onclick="newGame()" class="btn btn-default" style="font-weight: bold; width: 70px; float: right;">Create</button>
+    </form>
+    </div>
+    <hr>
+    <!-- ========= 여기부터 매매결과 테이블 =========== -->
+    <div class="trading-records">
+      <h4> 기록 </h4>
+      <table class="table table-condensed table-bordered table-hover table-striped statement-table games">
+          <thead>
+              <tr>
+                  <th style='width:5%'>#</th>
+                  <th style='width:17%'>게시일</th>
+                  <th style='width:25%'>상 품</th>
+                  <th style='width:13%'>포지션</th>
+                  <th style='width:15%'>손 익</th>
+                  <th style='width:15%'>수익/위험</th>
+                  <th style='width:10%'>매매횟수</th>
+              </tr>
+          </thead>
+          <tbody>
+            {% for game in games %}
+              <tr value={{game.id}}>
+                <td style='width:5%'>{{ game.id }}</td>
+                <td style='width:17%'>{{ game.pub_date |date:"Y-m-d" }}</td>
+                <td style='width:25%'>{{ game.name }}</td>
+                <td style="width:13%;
+                  color: {% if game.position == 1 %}darkcyan {% else %} purple {% endif %}">
+                    {% if game.position == 1 %}Long
+                    {% elif game.position == -1 %}Short
+                    {% endif %}
+                  </td>
+                <td style="width:15%;
+                  color: {% if game.profit > 0 %}blue {% else %} red {% endif %}">
+                  {{ game.profit | floatformat | intcomma}}</td>
+                <td style="width:15%;
+                  color: {% if game.profit_to_risk > 0 %}blue {% else %} red {% endif %}">
+                  {{ game.profit_to_risk | floatformat }}</td>
+                <td style='width:10%'>{{ game.entry_set.count }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+      </table>
+    </div>
+
+  <!-- ===============  Pagination  ===========================================--> 
+  {% if is_paginated %}
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+      </li>
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+      {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+      <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+  {% endif %}
+  </div>
+</div>
+
+
+<!-- ===============  Modal for Game  ===========================================-->
+<div class="container">
+  <div class="modal" id="game-detail" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" onclick="closeModal()" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title" id='modal-title'></h4>
+        </div>
+        <div class="modal-body">
+          <div class='entries'>
+            <h4> 진 입
+                  <td style='width:5%'>
+                    <button type="button" class="btn btn-default btn-sm"
+                            onclick="$('#new-entry-row').attr('hidden', !$('#new-entry-row').attr('hidden'))">
+                     <span class="glyphicon glyphicon-plus" ></span></button>
+                  </td>
+            </h4>
+            <table class="table table-condensed table-bordered table-hover" id="entry-table">
+              <thead>
+                <tr>
+                  <th style='width:5%'>#</th>
+                  <th style='width:20%'>날  짜</th>
+                  <th style='width:16%'>가  격</th>
+                  <th style='width:7%'>계약수</th>
+                  <th style='width:16%'>손절가</th>
+                  <th style='width:16%'>매매타입</th>
+                  <th style='width:15%'>종목코드</th>
+                  <th style='width:5%'></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr id='new-entry-row' hidden>
+                  <td style='width:5%'></td>
+                  <td style='width:20%'><input type='datetime' class='form-control input-sm' name='entry_date' required onclick="$(this).val(setNow('today'))"></td>
+                  <td style='width:16%'><input type='number' class='form-control input-sm' name='entry_price' step='any' required></td>
+                  <td style='width:7%'><input type='number' class='form-control input-sm' name='contracts' min='1' required></td>
+                  <td style='width:16%'><input type='number' class='form-control input-sm' name='loss_cut' step='any' required></td>
+                  <td style='width:16%'><select class='form-control input-sm' name='plan'>
+                      <option value='Trend Following'>Trend Following</option>
+                      <option value='Even Money' selected>Even Money</option>
+                  </select></td>
+                  <td style='width:15%'><select class='form-control input-sm' name='code' id="code">
+                  </select></td>
+                  <td style='width:5%'>
+                    <button type="button" onclick='saveEntry()' class="btn btn-default btn-sm" id="new-entry-btn">
+                     <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <hr>
+
+          <div class='exits'>
+            <h4> 청 산 </h4>
+            <table class="table table-condensed table-bordered table-hover" id="exit-table">
+              <thead>
+                <tr>
+                  <th style='width:5%'>#</th>
+                  <th style='width:20%'>가  격</th>
+                  <th style='width:10%'>계약수</th>
+                  <th style='width:12%'>보유기간</th>
+                  <th style='width:20%'>수  익</th>
+                  <th style='width:20%'>단위수익</th>
+                  <th style='width:7%'>P/R</th>
+                  <th style='width:5%'></th>
+                </tr>
+                <tbody>
+                  
+                </tbody>
+            </table>
+            
+            <br>
+            <div id="new-exit" style="text-align: right" hidden>
+                <input type="text" class='form-control input-sm' name="exit_id" style="display:none !important" hidden>
+                <input type="text" class='form-control input-sm' name='entry_id' 
+                       placeholder="Entry id" style='width:10%;cursor:default' disabled>
+                <input type="number" class='form-control input-sm' name='exit_price' 
+                       step='any' placeholder="exit price" style='width:20%'>
+                <input type='number' class='form-control input-sm' name='exit_contracts'
+                       min='1' style='width:20%' placeholder="contracts">
+                <input type='datetime' class='form-control input-sm' name='exit_date' 
+                       onclick="$(this).val(setNow('today'));" placeholder="exit date" style="width:25%">
+                <button type="button" onclick='saveExit()' class="btn btn-default btn-sm" id="new-entry-btn">
+                 <span class="glyphicon glyphicon-ok" aria-hidden="true"></span></button>
+                <button type="button" onclick="$(this)[0].parentElement.hidden = true;" class="btn btn-default btn-sm" id="new-entry-btn">
+                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+            </div>
+          </div>
+
+          <hr>
+
+          <div class='summary'>
+            <h4> Summary </h4>
+            <table class="table table-condensed table-bordered table-hover" id="summary-table">
+              <thead>
+                <tr>
+                  <th style='width:25%'>총 수익</th>
+                  <th style='width:25%'>평균 수익</th>
+                  <th style='width:25%'>수수료</th>
+                  <th style='width:25%'>매매횟수</th>
+                </tr>
+                <tbody>
+                </tbody>
+            </table>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <p style="font-size:1.1em;font-weight:bold;float:left"> Complete 
+            <input type='checkbox' name="complete"></input>
+          </p>
+          <form id="delete-form" action="{% url 'record' %}" method="post" style="display:inline" onsubmit="return confirm('Are you sure to delete the game?')">
+            {% csrf_token %}
+            <input type="text" name="form_type" value="delete_game" hidden></input>
+            <input id="delete-id" type="text" name="id" hidden></input>
+            <button id="delete-btn" type="submit" class="btn btn-default" style="font-weight:bold">Delete</button>
+          </form>
+          <button type="button" onclick="closeModal();" class="btn btn-default" data-dismiss="modal" style="font-weight:bold">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock trading_content %}

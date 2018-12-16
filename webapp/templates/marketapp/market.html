@@ -1,0 +1,96 @@
+{% extends 'marketapp/base_marketapp.html' %}
+{% load static %}
+{% block title %}Records{% endblock title %}
+{% block marketapp_content %}  
+<div class="main">
+    <div class="container-fluid">
+    <div class="first row">
+        <!-- 관심종목 화면 -->
+        <div class="products-list col-md-7">
+            <ul class="nav nav-tabs products">
+                <li class="active" id="FAV"><a onclick="selectMarket('FAV');">FAV</a></li>
+               {% for market in markets %}
+                <li id="{{market}}"><a onclick="selectMarket('{{market}}');">{{market}}</a></li>
+               {% endfor %}
+            </ul>
+            <div class="products-container">
+                <table class="table table-condensed table-bordered table-hover" id="fav-table">
+                    <thead>
+                        <tr>
+                            <th style='width:6%;'>
+                                <span class="glyphicon glyphicon-star"></span>
+                            </th>
+                            <th style='width:32%'>Product</th>
+                            <th style='width:14%'>Expiration</th>
+                            <th style='width:16%'>Price</th>
+                            <th style='width:16%'>Diff</th>
+                            <th style='width:16%'>filter3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!--종목정보 화면 -->
+        <div class="p-info col-md-5">
+            <table class="table table-condensed table-bordered">
+                <tr>
+                    <th>상 품</th>
+                    <td style='font-size:13px;padding:0px;'></td>
+                    <th>거래소</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>기준통화</th>
+                    <td></td>
+                    <th>위탁증거금</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>최종거래일</th>
+                    <td></td>
+                    <th>영업일자</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>틱가치</th>
+                    <td></td>
+                    <th>잔존만기</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>장시작시간</th>
+                    <td></td>
+                    <th>장마감시간</th>
+                    <td></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <!-- status bar -->
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+        <div class="status-bar">
+            <div style="float:left;display:inline">
+                <span class="glyphicon glyphicon-volume-up"></span>
+                <p id="log"></p>
+            </div>
+            <div style="float:right;display:inline;">
+                
+                <p class="hidden" id="login-button" 
+                   onclick="ebest.login()" style="cursor:pointer">Connect</p> |
+                <p id="connect-state">연결안됨</p> |
+                <p id="server-type">데모서버</p> |
+                <p id="last-update"></p> 
+                
+            </div>
+        </div>
+    </nav>
+
+    </div>
+</div>
+
+<script src="{% static "js/websocketbridge.js" %}"></script>
+<script src="{% static "js/market.js" %}"></script>
+{% endblock marketapp_content %}
+
